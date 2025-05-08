@@ -1,0 +1,9 @@
+messages的role说明：
+① 第一条message的role必须是user或system
+② 最后一条message的role必须是user或tool，如果是ERNIE 4.5或ERNIE X1 Turbo系列，最后一条message的role必须是user
+③ 如果未使用function call功能：
+· 当第一条message的role为user，role值需要依次为user -> assistant -> user...，即奇数位message的role值必须为user或function，偶数位message的role值为assistant，例如：示例中message中的role值分别为user、assistant、user、assistant、user；奇数位（红框）message中的role值为user，即第1、3、5个message中的role值为user；偶数位（蓝框）值为assistant，即第2、4个message中的role值为assistant
+如果使用function call功能：
+· 当第一条message的role为user，role值需要依次为user -> assistant -> user/tool ...
+· 当第一条message的role为system，role值需要依次为system -> user/tool -> assistant -> user/tool ...
+· 注意，支持连续多条role=tool的消息。当开启函数并行调用即parallel_tool_calls=true时，可能会返回多个tool_call，每个tool_call需要对应到一条role=tool的消息来提供函数调用结果。例如：示例中message中的role值分别为user、assistant、user、assistant、tool、tool；第4个message中的role值为assistant，触发了函数并行调用，返回了两个tool_call，需要连续两条role=tool的消息提供函数调用结果，即第5、6个消息message中的role值为tool

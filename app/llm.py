@@ -30,7 +30,6 @@ from app.schema import (
     ToolChoice,
 )
 
-
 REASONING_MODELS = ["o1", "o3-mini"]
 MULTIMODAL_MODELS = [
     "gpt-4-vision-preview",
@@ -39,6 +38,17 @@ MULTIMODAL_MODELS = [
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+]
+
+# 添加文心一言模型列表
+ERNIE_MODELS = [
+    "ernie-4.5-8k-preview",
+    "ernie-4.5-8k",
+    "ernie-x1-turbo",
+    "deepseek-r1",
+    "ERNIE-Bot-4",
+    "ERNIE-Bot",
+    "deepseek-v3",
 ]
 
 
@@ -351,9 +361,146 @@ class LLM:
 
         return formatted_messages
 
+    @staticmethod
+    def format_ernie_messages(messages: List[dict]) -> List[dict]:
+        """
+        按照百度文心一言API的规则格式化消息列表。
+
+        规则：
+        1. 第一条message的role必须是user或system
+        2. 最后一条message的role必须是user或tool (对于ERNIE 4.5或X1 Turbo系列,必须是user)
+        3. 消息顺序规则:
+           - 未使用function call: user->assistant->user...交替
+           - 使用function call时:
+             - 第一条是user: user->assistant->user/tool...
+             - 第一条是system: system->user/tool->assistant->user/tool...
+        4. 连续的两条user消息将被合并，第一条前添加"用户输入："，第二条前添加"\n执行要求:\n"
+        5. 如果一条消息的role为tool，它后面的一条消息role为user，则删除这条user消息
+
+        Args:
+            messages: 原始消息列表
+
+        Returns:
+            List[dict]: 格式化后的消息列表
+        """
+        if not messages:
+            return []
+
+        # 先过滤掉所有紧跟在tool消息后面的user消息
+        filtered_messages = []
+        i = 0
+        while i < len(messages):
+            curr_msg = messages[i]
+
+            # 检查当前消息是否为tool，且下一条是user
+            if (
+                curr_msg.get("role") == "tool"
+                and i + 1 < len(messages)
+                and messages[i + 1].get("role") == "user"
+            ):
+                # 添加当前tool消息，跳过下一条user消息
+                filtered_messages.append(curr_msg)
+                print(f"检测到tool消息后跟随user消息，舍弃第{i+2}条user消息")
+                i += 2  # 跳过user消息
+            else:
+                # 正常添加当前消息
+                filtered_messages.append(curr_msg)
+                i += 1
+
+        return filtered_messages
+        # # 首先处理连续的user消息合并
+        # merged_messages = []
+        # i = 0
+        # while i < len(filtered_messages):
+        #     curr_msg = filtered_messages[i]
+
+        #     # 检查是否有连续的两条user消息需要合并
+        #     if (
+        #         i + 1 < len(filtered_messages)
+        #         and curr_msg.get("role") == "user"
+        #         and filtered_messages[i + 1].get("role") == "user"
+        #     ):
+        #         # 创建合并后的消息
+        #         merged_content = f"用户输入：{curr_msg.get('content', '')}\n执行要求:\n{filtered_messages[i + 1].get('content', '')}"
+        #         merged_msg = {"role": "user", "content": merged_content}
+        #         # 如果原消息中有model字段则保留
+        #         if "model" in curr_msg:
+        #             merged_msg["model"] = curr_msg["model"]
+
+        #         merged_messages.append(merged_msg)
+        #         i += 2  # 跳过已合并的两条消息
+        #     else:
+        #         merged_messages.append(curr_msg)
+        #         i += 1
+
+        # # 现在使用合并后的消息列表继续原来的格式化逻辑
+        # formatted_msgs = []
+        # has_function_call = any("tool_calls" in msg for msg in merged_messages)
+        # is_ernie_4_5 = any(
+        #     model_name in merged_messages[0].get("model", "")
+        #     for model_name in ["ernie-4.5", "ernie-x1"]
+        # )
+
+        # # 检查第一条消息
+        # first_msg = merged_messages[0]
+        # if first_msg["role"] not in ["user", "system"]:
+        #     # 如果第一条消息不是user或system，将其转换为user消息
+        #     first_msg["role"] = "user"
+
+        # formatted_msgs.append(first_msg)
+
+        # # 处理中间消息
+        # for i in range(1, len(merged_messages) - 1):
+        #     curr_msg = merged_messages[i]
+        #     prev_msg = formatted_msgs[-1]
+
+        #     # 根据规则调整role
+        #     if not has_function_call:
+        #         # 非函数调用场景，保持user和assistant交替
+        #         if prev_msg["role"] == "user" and curr_msg["role"] != "assistant":
+        #             curr_msg["role"] = "assistant"
+        #         elif prev_msg["role"] == "assistant" and curr_msg["role"] != "user":
+        #             curr_msg["role"] = "user"
+        #     else:
+        #         # 函数调用场景
+        #         if prev_msg["role"] == "user" and curr_msg["role"] != "assistant":
+        #             curr_msg["role"] = "assistant"
+        #         elif prev_msg["role"] == "assistant" and curr_msg["role"] not in [
+        #             "user",
+        #             "tool",
+        #         ]:
+        #             curr_msg["role"] = "user"
+        #         elif prev_msg["role"] == "system" and curr_msg["role"] not in [
+        #             "user",
+        #             "tool",
+        #         ]:
+        #             curr_msg["role"] = "user"
+        #         elif prev_msg["role"] == "tool" and curr_msg["role"] != "assistant":
+        #             # 工具回复后应该是assistant
+        #             curr_msg["role"] = "assistant"
+
+        #     formatted_msgs.append(curr_msg)
+
+        # # 处理最后一条消息
+        # if len(merged_messages) > 1:
+        #     last_msg = merged_messages[-1]
+
+        #     # 对于ERNIE 4.5或ERNIE X1 Turbo系列，最后一条消息必须是user
+        #     if is_ernie_4_5:
+        #         if last_msg["role"] != "user":
+        #             last_msg["role"] = "user"
+        #     else:
+        #         # 对于其他版本，最后一条消息必须是user或tool
+        #         if last_msg["role"] not in ["user", "tool"]:
+        #             last_msg["role"] = "user"
+
+        #     formatted_msgs.append(last_msg)
+
+        # return formatted_msgs
+
     @retry(
         wait=wait_random_exponential(min=1, max=60),
-        stop=stop_after_attempt(6),
+        stop=stop_after_attempt(1),
         retry=retry_if_exception_type(
             (OpenAIError, Exception, ValueError)
         ),  # Don't retry TokenLimitExceeded
@@ -394,6 +541,20 @@ class LLM:
             else:
                 messages = self.format_messages(messages, supports_images)
 
+            # 检查是否为文心一言模型，并应用特定的消息格式规则
+            is_ernie_model = any(
+                model_name in self.model for model_name in ERNIE_MODELS
+            )
+            if is_ernie_model:
+                # 添加模型信息到消息中，用于文心一言格式化
+                for msg in messages:
+                    msg["model"] = self.model
+                # 应用文心一言特有的消息格式规则
+                messages = self.format_ernie_messages(messages)
+                logger.info(
+                    f"[ASK-FUNCTION] Applied ERNIE message formatting rules for model {self.model}\n:{messages}"
+                )
+
             # Calculate input token count
             input_tokens = self.count_message_tokens(messages)
 
@@ -402,7 +563,6 @@ class LLM:
                 error_message = self.get_limit_error_message(input_tokens)
                 # Raise a special exception that won't be retried
                 raise TokenLimitExceeded(error_message)
-
             params = {
                 "model": self.model,
                 "messages": messages,
@@ -480,7 +640,7 @@ class LLM:
 
     @retry(
         wait=wait_random_exponential(min=1, max=60),
-        stop=stop_after_attempt(6),
+        stop=stop_after_attempt(1),
         retry=retry_if_exception_type(
             (OpenAIError, Exception, ValueError)
         ),  # Don't retry TokenLimitExceeded
@@ -537,9 +697,7 @@ class LLM:
             multimodal_content = (
                 [{"type": "text", "text": content}]
                 if isinstance(content, str)
-                else content
-                if isinstance(content, list)
-                else []
+                else content if isinstance(content, list) else []
             )
 
             # Add images to content
@@ -636,7 +794,7 @@ class LLM:
 
     @retry(
         wait=wait_random_exponential(min=1, max=60),
-        stop=stop_after_attempt(6),
+        stop=stop_after_attempt(1),
         retry=retry_if_exception_type(
             (OpenAIError, Exception, ValueError)
         ),  # Don't retry TokenLimitExceeded
@@ -686,6 +844,20 @@ class LLM:
                 messages = system_msgs + self.format_messages(messages, supports_images)
             else:
                 messages = self.format_messages(messages, supports_images)
+
+            # 检查是否为文心一言模型，并应用特定的消息格式规则
+            is_ernie_model = any(
+                model_name in self.model for model_name in ERNIE_MODELS
+            )
+            if is_ernie_model:
+                # 添加模型信息到消息中，用于文心一言格式化
+                for msg in messages:
+                    msg["model"] = self.model
+                # 应用文心一言特有的消息格式规则
+                messages = self.format_ernie_messages(messages)
+                logger.info(
+                    f"[ASK-TOOL FUNCTION] Applied ERNIE message formatting rules for model {self.model}\n:{messages}"
+                )
 
             # Calculate input token count
             input_tokens = self.count_message_tokens(messages)
