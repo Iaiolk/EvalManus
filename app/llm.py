@@ -391,17 +391,12 @@ class LLM:
         i = 0
         while i < len(messages):
             curr_msg = messages[i]
-
-            # 检查当前消息是否为tool，且下一条是user
-            if (
-                curr_msg.get("role") == "tool"
-                and i + 1 < len(messages)
-                and messages[i + 1].get("role") == "user"
-            ):
-                # 添加当前tool消息，跳过下一条user消息
+            if curr_msg.get("role") == "tool":
                 filtered_messages.append(curr_msg)
-                print(f"检测到tool消息后跟随user消息，舍弃第{i+2}条user消息")
-                i += 2  # 跳过user消息
+                i += 1
+                while i < len(messages) and messages[i].get("role") == "user":
+                    logger.info(f"检测到tool消息后跟随user消息，舍弃第{i}条user消息")
+                    i += 1
             else:
                 # 正常添加当前消息
                 filtered_messages.append(curr_msg)
