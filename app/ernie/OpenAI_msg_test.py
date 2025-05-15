@@ -9,13 +9,13 @@ client = OpenAI(
     api_key="bce-v3/ALTAK-pOhfMH708hRvFf1pSDthj/141ada82dd49207be48d9bd013234550f9e04805",
 )
 response = client.chat.completions.create(
-    model="ernie-4.5-8k-preview",
+    model="deepseek-v3",
     messages=[{"content": "你是谁", "role": "user"}],
     temperature=0.8,
     top_p=0.8,
     extra_body={
         "penalty_score": 1,
-        "web_search": {"enable": False, "enable_trace": False},
+        "web_search": {"enable": True, "enable_trace": True},
     },
 )
 print(response)

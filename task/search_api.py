@@ -1,19 +1,6 @@
 import json
-import logging
-import math
-import os
 import re
-import sys
-import time
-import urllib
-from collections import OrderedDict, defaultdict
-from configparser import ConfigParser
-from datetime import datetime, timedelta
-from typing import List, Optional
-from urllib.parse import quote
 
-import numpy as np
-import pandas as pd
 import requests
 
 model_api = "https://qianfan.baidubce.com/v2/ai_search/chat/completions"
@@ -22,7 +9,16 @@ api_key = (
     "Bearer bce-v3/ALTAK-pOhfMH708hRvFf1pSDthj/141ada82dd49207be48d9bd013234550f9e04805"
 )
 model_type = "ernie-4.5-8k-preview"
+
+
 # model_type = "ernie-4.0-8k"
+class PromptTemplate:
+    def __init__(self, input_variables, template):
+        self.input_variables = input_variables
+        self.template = template
+
+    def format(self, **kwargs):
+        return self.template.format(**kwargs)
 
 
 def llm_classify_return(llm_return):
@@ -158,7 +154,7 @@ def get_acc_flag(query):
     acc_flag = "-"
     acc_flag_res = "-"
 
-    prompt_file = "/home/work/songxianyang/LLM-Session/Session_text_generate/prompt_file/是否需要准确性校验prompt.txt"
+    prompt_file = "task/是否需要准确性校验prompt.txt"
     prompt_template = open(prompt_file, "r").read()
     prompt = PromptTemplate(input_variables=["query"], template=prompt_template)
     prompt_text = prompt.format(query=query)
@@ -181,7 +177,7 @@ def get_acc_res(query, session_text, llm_res, llm_ref):
     acc_flag = "-"
     acc_flag_res = "-"
 
-    prompt_file = "/home/work/songxianyang/LLM-Session/Session_text_generate/prompt_file/准确溯源结果输出.txt"
+    prompt_file = "task/准确溯源结果输出.txt"
     prompt_template = open(prompt_file, "r").read()
     prompt = PromptTemplate(
         input_variables=["query", "session_text", "llm_res", "llm_ref"],
@@ -239,34 +235,3 @@ if __name__ == "__main__":
             get_acc_res(each_query, session_text, ai_search_content, ai_reference)
     else:
         print("该pv无需做准确性校验")
-
-    #     logging.info(str(llm_res))
-    #     try:
-    #         res = json.loads(llm_res)
-    #     except:
-    #         res = {}
-    #         logging.info('大模型调用失败')
-
-    #     if len(res) != 0:
-    #         try:
-    #             ai_search_content = res['choices'][0]['message']['content']
-    #         except:
-    #             ai_search_content = '-'
-    #             logging.info('回答汇总获取失败')
-    #         try:
-    #             ai_reference = json.dumps(res['references'], indent=4, ensure_ascii=False)
-    #         except:
-    #             ai_reference = "{}"
-    #             logging.info('参考资料获取失败')
-
-    #         each_query_res.append(each_query)
-    #         each_query_res.append(ai_search_content)
-    #         each_query_res.append(ai_reference)
-
-    #         all_res.append(each_query_res)
-
-    # all_res_df = pd.DataFrame(
-    #     all_res,
-    #     columns=['query', 'AI回答总结', '参考资料']
-    # )
-    # all_res_df.to_excel('/home/work/songxianyang/LLM-Session/Session_text_generate/accurate_tracing_res/3w2.xlsx', index=None)
