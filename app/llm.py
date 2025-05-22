@@ -364,24 +364,7 @@ class LLM:
     @staticmethod
     def format_ernie_messages(messages: List[dict]) -> List[dict]:
         """
-        按照百度文心一言API的规则格式化消息列表。
-
-        规则：
-        1. 第一条message的role必须是user或system
-        2. 最后一条message的role必须是user或tool (对于ERNIE 4.5或X1 Turbo系列,必须是user)
-        3. 消息顺序规则:
-           - 未使用function call: user->assistant->user...交替
-           - 使用function call时:
-             - 第一条是user: user->assistant->user/tool...
-             - 第一条是system: system->user/tool->assistant->user/tool...
-        4. 连续的两条user消息将被合并，第一条前添加"用户输入："，第二条前添加"\n执行要求:\n"
-        5. 如果一条消息的role为tool，它后面的一条消息role为user，则删除这条user消息
-
-        Args:
-            messages: 原始消息列表
-
-        Returns:
-            List[dict]: 格式化后的消息列表
+        Format messages for ERNIE models by removing tool messages
         """
         if not messages:
             return []
@@ -395,103 +378,16 @@ class LLM:
                 filtered_messages.append(curr_msg)
                 i += 1
                 while i < len(messages) and messages[i].get("role") == "user":
-                    logger.info(f"检测到tool消息后跟随user消息，舍弃第{i}条user消息")
+                    # logger.info(f"检测到tool消息后跟随user消息，舍弃第{i}条user消息")
                     i += 1
             else:
                 # 正常添加当前消息
                 filtered_messages.append(curr_msg)
                 i += 1
-
+        # 如果最后一条消息是assistant，则删除
+        while filtered_messages and filtered_messages[-1].get("role") == "assistant":
+            filtered_messages.pop()
         return filtered_messages
-        # # 首先处理连续的user消息合并
-        # merged_messages = []
-        # i = 0
-        # while i < len(filtered_messages):
-        #     curr_msg = filtered_messages[i]
-
-        #     # 检查是否有连续的两条user消息需要合并
-        #     if (
-        #         i + 1 < len(filtered_messages)
-        #         and curr_msg.get("role") == "user"
-        #         and filtered_messages[i + 1].get("role") == "user"
-        #     ):
-        #         # 创建合并后的消息
-        #         merged_content = f"用户输入：{curr_msg.get('content', '')}\n执行要求:\n{filtered_messages[i + 1].get('content', '')}"
-        #         merged_msg = {"role": "user", "content": merged_content}
-        #         # 如果原消息中有model字段则保留
-        #         if "model" in curr_msg:
-        #             merged_msg["model"] = curr_msg["model"]
-
-        #         merged_messages.append(merged_msg)
-        #         i += 2  # 跳过已合并的两条消息
-        #     else:
-        #         merged_messages.append(curr_msg)
-        #         i += 1
-
-        # # 现在使用合并后的消息列表继续原来的格式化逻辑
-        # formatted_msgs = []
-        # has_function_call = any("tool_calls" in msg for msg in merged_messages)
-        # is_ernie_4_5 = any(
-        #     model_name in merged_messages[0].get("model", "")
-        #     for model_name in ["ernie-4.5", "ernie-x1"]
-        # )
-
-        # # 检查第一条消息
-        # first_msg = merged_messages[0]
-        # if first_msg["role"] not in ["user", "system"]:
-        #     # 如果第一条消息不是user或system，将其转换为user消息
-        #     first_msg["role"] = "user"
-
-        # formatted_msgs.append(first_msg)
-
-        # # 处理中间消息
-        # for i in range(1, len(merged_messages) - 1):
-        #     curr_msg = merged_messages[i]
-        #     prev_msg = formatted_msgs[-1]
-
-        #     # 根据规则调整role
-        #     if not has_function_call:
-        #         # 非函数调用场景，保持user和assistant交替
-        #         if prev_msg["role"] == "user" and curr_msg["role"] != "assistant":
-        #             curr_msg["role"] = "assistant"
-        #         elif prev_msg["role"] == "assistant" and curr_msg["role"] != "user":
-        #             curr_msg["role"] = "user"
-        #     else:
-        #         # 函数调用场景
-        #         if prev_msg["role"] == "user" and curr_msg["role"] != "assistant":
-        #             curr_msg["role"] = "assistant"
-        #         elif prev_msg["role"] == "assistant" and curr_msg["role"] not in [
-        #             "user",
-        #             "tool",
-        #         ]:
-        #             curr_msg["role"] = "user"
-        #         elif prev_msg["role"] == "system" and curr_msg["role"] not in [
-        #             "user",
-        #             "tool",
-        #         ]:
-        #             curr_msg["role"] = "user"
-        #         elif prev_msg["role"] == "tool" and curr_msg["role"] != "assistant":
-        #             # 工具回复后应该是assistant
-        #             curr_msg["role"] = "assistant"
-
-        #     formatted_msgs.append(curr_msg)
-
-        # # 处理最后一条消息
-        # if len(merged_messages) > 1:
-        #     last_msg = merged_messages[-1]
-
-        #     # 对于ERNIE 4.5或ERNIE X1 Turbo系列，最后一条消息必须是user
-        #     if is_ernie_4_5:
-        #         if last_msg["role"] != "user":
-        #             last_msg["role"] = "user"
-        #     else:
-        #         # 对于其他版本，最后一条消息必须是user或tool
-        #         if last_msg["role"] not in ["user", "tool"]:
-        #             last_msg["role"] = "user"
-
-        #     formatted_msgs.append(last_msg)
-
-        # return formatted_msgs
 
     @retry(
         wait=wait_random_exponential(min=1, max=60),
@@ -546,9 +442,9 @@ class LLM:
                     msg["model"] = self.model
                 # 应用文心一言特有的消息格式规则
                 messages = self.format_ernie_messages(messages)
-                logger.info(
-                    f"[ASK-FUNCTION] Applied ERNIE message formatting rules for model {self.model}\n:{messages}"
-                )
+                # logger.info(
+                #     f"[ASK-FUNCTION] Applied ERNIE message formatting rules for model {self.model}\n:{messages}"
+                # )
 
             # Calculate input token count
             input_tokens = self.count_message_tokens(messages)
@@ -850,10 +746,14 @@ class LLM:
                     msg["model"] = self.model
                 # 应用文心一言特有的消息格式规则
                 messages = self.format_ernie_messages(messages)
-                logger.info(
-                    f"[ASK-TOOL FUNCTION] Applied ERNIE message formatting rules for model {self.model}\n:{messages}"
-                )
-
+                # logger.info(
+                #     f"[ASK-TOOL FUNCTION] Applied ERNIE message formatting rules for model {self.model}\n"
+                # )
+                for msg in messages:
+                    if msg.get("role") == "user" or msg.get("role") == "system":
+                        continue
+                    else:
+                        logger.info(f"{msg}")
             # Calculate input token count
             input_tokens = self.count_message_tokens(messages)
 
@@ -891,9 +791,10 @@ class LLM:
                 params["max_completion_tokens"] = self.max_tokens
             else:
                 params["max_tokens"] = self.max_tokens
-                params["temperature"] = (
-                    temperature if temperature is not None else self.temperature
-                )
+                # params["temperature"] = (
+                #     temperature if temperature is not None else self.temperature
+                # )
+                params["temperature"] = 0.1
 
             params["stream"] = False  # Always use non-streaming for tool requests
             response: ChatCompletion = await self.client.chat.completions.create(

@@ -79,7 +79,10 @@ class BaseAgent(BaseModel, ABC):
             self.state = AgentState.ERROR  # Transition to ERROR on failure
             raise e
         finally:
-            self.state = previous_state  # Revert to previous state
+            # 如果当前状态为FINISHED，保留这个状态而不是恢复原状态
+            # 这样可以确保terminate工具设置的FINISHED状态不会被重置
+            if self.state != AgentState.FINISHED:
+                self.state = previous_state  # 只有在非FINISHED状态时才恢复原状态
 
     def update_memory(
         self,

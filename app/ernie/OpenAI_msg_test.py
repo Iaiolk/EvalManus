@@ -10,7 +10,9 @@ client = OpenAI(
 )
 response = client.chat.completions.create(
     model="deepseek-v3",
-    messages=[{"content": "你是谁", "role": "user"}],
+    messages=[
+        {"content": "抗日时山东三支队长是谁杨国夫在山东先后什么职务", "role": "user"}
+    ],
     temperature=0.8,
     top_p=0.8,
     extra_body={

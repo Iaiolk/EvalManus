@@ -11,6 +11,7 @@ from app.tool import Terminate, ToolCollection
 from app.tool.ask_human import AskHuman
 from app.tool.browser_use_tool import BrowserUseTool
 from app.tool.mcp import MCPClients, MCPClientTool
+from app.tool.model_search import ModelSearch
 from app.tool.python_execute import PythonExecute
 from app.tool.str_replace_editor import StrReplaceEditor
 
@@ -40,6 +41,7 @@ class Manus(ToolCallAgent):
             StrReplaceEditor(),
             AskHuman(),
             Terminate(),
+            ModelSearch(),
         )
     )
 

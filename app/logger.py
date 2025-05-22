@@ -5,7 +5,6 @@ from loguru import logger as _logger
 
 from app.config import PROJECT_ROOT
 
-
 _print_level = "INFO"
 
 
@@ -26,7 +25,22 @@ def define_log_level(print_level="INFO", logfile_level="DEBUG", name: str = None
     return _logger
 
 
-logger = define_log_level()
+# 使用单例模式确保logger只初始化一次
+_initialized = False
+logger = _logger
+
+
+def initialize_logger(print_level="INFO", logfile_level="DEBUG", name: str = None):
+    """确保logger只被初始化一次的全局函数"""
+    global logger, _initialized
+    if not _initialized:
+        logger = define_log_level(print_level, logfile_level, name)
+        _initialized = True
+    return logger
+
+
+# 默认初始化
+initialize_logger()
 
 
 if __name__ == "__main__":

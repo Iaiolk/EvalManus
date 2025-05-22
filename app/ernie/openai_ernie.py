@@ -8,14 +8,18 @@ client = OpenAI(
     base_url="https://qianfan.baidubce.com/v2",
     api_key="bce-v3/ALTAK-pOhfMH708hRvFf1pSDthj/141ada82dd49207be48d9bd013234550f9e04805",
 )
+
+user_content = """
+抗日时山东三支队长是谁杨国夫在山东先后什么职务
+"""
 response = client.chat.completions.create(
-    model="ernie-4.5-8k-preview",
-    messages=[{"content": "你是谁", "role": "user"}],
+    model="deepseek-v3",
+    messages=[{"content": user_content, "role": "user"}],
     temperature=0.8,
     top_p=0.8,
     extra_body={
         "penalty_score": 1,
-        "web_search": {"enable": False, "enable_trace": False},
+        "web_search": {"enable": True, "enable_trace": True},
     },
 )
 print(response)
