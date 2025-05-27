@@ -20,82 +20,80 @@ from app.tool.search.base import SearchItem
 
 
 class SearchResult(BaseModel):
-    """Represents a single search result returned by a search engine."""
+    """表示搜索引擎返回的单个搜索结果。"""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    position: int = Field(description="Position in search results")
-    url: str = Field(description="URL of the search result")
-    title: str = Field(default="", description="Title of the search result")
-    description: str = Field(
-        default="", description="Description or snippet of the search result"
-    )
-    source: str = Field(description="The search engine that provided this result")
+    position: int = Field(description="搜索结果中的位置")
+    url: str = Field(description="搜索结果的URL")
+    title: str = Field(default="", description="搜索结果的标题")
+    description: str = Field(default="", description="搜索结果的描述或摘要")
+    source: str = Field(description="提供此结果的搜索引擎")
     raw_content: Optional[str] = Field(
-        default=None, description="Raw content from the search result page if available"
+        default=None, description="搜索结果页面的原始内容（如果可用）"
     )
 
     def __str__(self) -> str:
-        """String representation of a search result."""
+        """搜索结果的字符串表示。"""
         return f"{self.title} ({self.url})"
 
 
 class SearchMetadata(BaseModel):
-    """Metadata about the search operation."""
+    """关于搜索操作的元数据。"""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    total_results: int = Field(description="Total number of results found")
-    language: str = Field(description="Language code used for the search")
-    country: str = Field(description="Country code used for the search")
+    total_results: int = Field(description="找到的结果总数")
+    language: str = Field(description="搜索使用的语言代码")
+    country: str = Field(description="搜索使用的国家代码")
 
 
 class SearchResponse(ToolResult):
-    """Structured response from the web search tool, inheriting ToolResult."""
+    """网页搜索工具的结构化响应，继承自ToolResult。"""
 
-    query: str = Field(description="The search query that was executed")
+    query: str = Field(description="执行的搜索查询")
     results: List[SearchResult] = Field(
-        default_factory=list, description="List of search results"
+        default_factory=list, description="搜索结果列表"
     )
     metadata: Optional[SearchMetadata] = Field(
-        default=None, description="Metadata about the search"
+        default=None, description="关于搜索的元数据"
     )
 
     @model_validator(mode="after")
     def populate_output(self) -> "SearchResponse":
-        """Populate output or error fields based on search results."""
+        """根据搜索结果填充输出或错误字段。"""
         if self.error:
             return self
 
-        result_text = [f"Search results for '{self.query}':"]
+        result_text = [f"'{self.query}'的搜索结果："]
 
         for i, result in enumerate(self.results, 1):
-            # Add title with position number
-            title = result.title.strip() or "No title"
+            # 添加带位置编号的标题
+            title = result.title.strip() or "无标题"
             result_text.append(f"\n{i}. {title}")
 
-            # Add URL with proper indentation
-            result_text.append(f"   URL: {result.url}")
+            # 添加带适当缩进的URL
+            result_text.append(f"   网址: {result.url}")
 
-            # Add description if available
+            # 如果有描述则添加
             if result.description.strip():
-                result_text.append(f"   Description: {result.description}")
+                result_text.append(f"   描述: {result.description}")
 
-            # Add content preview if available
+            # 如果有内容预览则添加
             if result.raw_content:
                 content_preview = result.raw_content[:1000].replace("\n", " ").strip()
                 if len(result.raw_content) > 1000:
                     content_preview += "..."
-                result_text.append(f"   Content: {content_preview}")
+                result_text.append(f"   内容: {content_preview}")
 
-        # Add metadata at the bottom if available
+        # 如果有元数据则在底部添加
         if self.metadata:
             result_text.extend(
                 [
-                    f"\nMetadata:",
-                    f"- Total results: {self.metadata.total_results}",
-                    f"- Language: {self.metadata.language}",
-                    f"- Country: {self.metadata.country}",
+                    f"\n元数据:",
+                    f"- 总结果数: {self.metadata.total_results}",
+                    f"- 语言: {self.metadata.language}",
+                    f"- 国家/地区: {self.metadata.country}",
                 ]
             )
 

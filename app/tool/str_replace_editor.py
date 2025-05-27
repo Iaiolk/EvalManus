@@ -1,4 +1,4 @@
-"""File and directory manipulation tool with sandbox support."""
+"""支持沙盒环境的文件和目录操作工具。"""
 
 from collections import defaultdict
 from pathlib import Path
@@ -15,7 +15,6 @@ from app.tool.file_operators import (
     SandboxFileOperator,
 )
 
-
 Command = Literal[
     "view",
     "create",
@@ -28,37 +27,37 @@ Command = Literal[
 SNIPPET_LINES: int = 4
 MAX_RESPONSE_LEN: int = 16000
 TRUNCATED_MESSAGE: str = (
-    "<response clipped><NOTE>To save on context only part of this file has been shown to you. "
-    "You should retry this tool after you have searched inside the file with `grep -n` "
-    "in order to find the line numbers of what you are looking for.</NOTE>"
+    "<响应已截断><注意>为了节省上下文，只显示了文件的一部分。"
+    "您应该使用 `grep -n` 在文件中搜索"
+    "以找到您要查找内容的行号，然后重试此工具。</注意>"
 )
 
-# Tool description
-_STR_REPLACE_EDITOR_DESCRIPTION = """Custom editing tool for viewing, creating and editing files
-* State is persistent across command calls and discussions with the user
-* If `path` is a file, `view` displays the result of applying `cat -n`. If `path` is a directory, `view` lists non-hidden files and directories up to 2 levels deep
-* The `create` command cannot be used if the specified `path` already exists as a file
-* If a `command` generates a long output, it will be truncated and marked with `<response clipped>`
-* The `undo_edit` command will revert the last edit made to the file at `path`
+# 工具描述
+_STR_REPLACE_EDITOR_DESCRIPTION = """用于查看、创建和编辑文件的自定义编辑工具
+* 状态在命令调用和与用户的讨论之间持续存在
+* 如果 `path` 是文件，`view` 显示应用 `cat -n` 的结果。如果 `path` 是目录，`view` 列出非隐藏文件和目录（最多2级深度）
+* 如果指定的 `path` 已作为文件存在，则不能使用 `create` 命令
+* 如果 `command` 生成长输出，它将被截断并标记为 `<response clipped>`
+* `undo_edit` 命令将撤销对 `path` 文件所做的最后一次编辑
 
-Notes for using the `str_replace` command:
-* The `old_str` parameter should match EXACTLY one or more consecutive lines from the original file. Be mindful of whitespaces!
-* If the `old_str` parameter is not unique in the file, the replacement will not be performed. Make sure to include enough context in `old_str` to make it unique
-* The `new_str` parameter should contain the edited lines that should replace the `old_str`
+使用 `str_replace` 命令的注意事项：
+* `old_str` 参数应该与原始文件中的一行或多行连续行完全匹配。注意空格！
+* 如果 `old_str` 参数在文件中不唯一，则不会执行替换。确保在 `old_str` 中包含足够的上下文以使其唯一
+* `new_str` 参数应包含应替换 `old_str` 的编辑行
 """
 
 
 def maybe_truncate(
     content: str, truncate_after: Optional[int] = MAX_RESPONSE_LEN
 ) -> str:
-    """Truncate content and append a notice if content exceeds the specified length."""
+    """如果内容超过指定长度，则截断内容并附加通知。"""
     if not truncate_after or len(content) <= truncate_after:
         return content
     return content[:truncate_after] + TRUNCATED_MESSAGE
 
 
 class StrReplaceEditor(BaseTool):
-    """A tool for viewing, creating, and editing files with sandbox support."""
+    """支持沙盒环境的文件查看、创建和编辑工具。"""
 
     name: str = "str_replace_editor"
     description: str = _STR_REPLACE_EDITOR_DESCRIPTION
@@ -66,32 +65,32 @@ class StrReplaceEditor(BaseTool):
         "type": "object",
         "properties": {
             "command": {
-                "description": "The commands to run. Allowed options are: `view`, `create`, `str_replace`, `insert`, `undo_edit`.",
+                "description": "要运行的命令。允许的选项有：`view`、`create`、`str_replace`、`insert`、`undo_edit`。",
                 "enum": ["view", "create", "str_replace", "insert", "undo_edit"],
                 "type": "string",
             },
             "path": {
-                "description": "Absolute path to file or directory.",
+                "description": "文件或目录的绝对路径。",
                 "type": "string",
             },
             "file_text": {
-                "description": "Required parameter of `create` command, with the content of the file to be created.",
+                "description": "`create` 命令的必需参数，包含要创建的文件内容。",
                 "type": "string",
             },
             "old_str": {
-                "description": "Required parameter of `str_replace` command containing the string in `path` to replace.",
+                "description": "`str_replace` 命令的必需参数，包含 `path` 中要替换的字符串。",
                 "type": "string",
             },
             "new_str": {
-                "description": "Optional parameter of `str_replace` command containing the new string (if not given, no string will be added). Required parameter of `insert` command containing the string to insert.",
+                "description": "`str_replace` 命令的可选参数，包含新字符串（如果未给出，则不会添加字符串）。`insert` 命令的必需参数，包含要插入的字符串。",
                 "type": "string",
             },
             "insert_line": {
-                "description": "Required parameter of `insert` command. The `new_str` will be inserted AFTER the line `insert_line` of `path`.",
+                "description": "`insert` 命令的必需参数。`new_str` 将在 `path` 的第 `insert_line` 行之后插入。",
                 "type": "integer",
             },
             "view_range": {
-                "description": "Optional parameter of `view` command when `path` points to a file. If none is given, the full file is shown. If provided, the file will be shown in the indicated line number range, e.g. [11, 12] will show lines 11 and 12. Indexing at 1 to start. Setting `[start_line, -1]` shows all lines from `start_line` to the end of the file.",
+                "description": "当 `path` 指向文件时，`view` 命令的可选参数。如果未给出，显示完整文件。如果提供，文件将在指定的行号范围内显示，例如 [11, 12] 将显示第11行和第12行。索引从1开始。设置 `[start_line, -1]` 显示从 `start_line` 到文件末尾的所有行。",
                 "items": {"type": "integer"},
                 "type": "array",
             },

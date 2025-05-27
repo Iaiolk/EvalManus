@@ -1,4 +1,5 @@
-"""Collection classes for managing multiple tools."""
+"""管理多个工具的集合类。"""
+
 from typing import Any, Dict, List
 
 from app.exceptions import ToolError
@@ -7,7 +8,7 @@ from app.tool.base import BaseTool, ToolFailure, ToolResult
 
 
 class ToolCollection:
-    """A collection of defined tools."""
+    """已定义工具的集合。"""
 
     class Config:
         arbitrary_types_allowed = True
@@ -27,7 +28,7 @@ class ToolCollection:
     ) -> ToolResult:
         tool = self.tool_map.get(name)
         if not tool:
-            return ToolFailure(error=f"Tool {name} is invalid")
+            return ToolFailure(error=f"工具{name}无效")
         try:
             result = await tool(**tool_input)
             return result
@@ -35,7 +36,7 @@ class ToolCollection:
             return ToolFailure(error=e.message)
 
     async def execute_all(self) -> List[ToolResult]:
-        """Execute all tools in the collection sequentially."""
+        """按顺序执行集合中的所有工具。"""
         results = []
         for tool in self.tools:
             try:
@@ -49,12 +50,12 @@ class ToolCollection:
         return self.tool_map.get(name)
 
     def add_tool(self, tool: BaseTool):
-        """Add a single tool to the collection.
+        """将单个工具添加到集合中。
 
-        If a tool with the same name already exists, it will be skipped and a warning will be logged.
+        如果已存在同名工具，将跳过该工具并记录警告。
         """
         if tool.name in self.tool_map:
-            logger.warning(f"Tool {tool.name} already exists in collection, skipping")
+            logger.warning(f"工具{tool.name}已存在于集合中，跳过")
             return self
 
         self.tools += (tool,)
@@ -62,9 +63,9 @@ class ToolCollection:
         return self
 
     def add_tools(self, *tools: BaseTool):
-        """Add multiple tools to the collection.
+        """将多个工具添加到集合中。
 
-        If any tool has a name conflict with an existing tool, it will be skipped and a warning will be logged.
+        如果任何工具与现有工具有名称冲突，将跳过该工具并记录警告。
         """
         for tool in tools:
             self.add_tool(tool)

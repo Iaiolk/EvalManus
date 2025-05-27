@@ -15,22 +15,21 @@ from app.llm import LLM
 from app.tool.base import BaseTool, ToolResult
 from app.tool.web_search import WebSearch
 
-
 _BROWSER_DESCRIPTION = """\
-A powerful browser automation tool that allows interaction with web pages through various actions.
-* This tool provides commands for controlling a browser session, navigating web pages, and extracting information
-* It maintains state across calls, keeping the browser session alive until explicitly closed
-* Use this when you need to browse websites, fill forms, click buttons, extract content, or perform web searches
-* Each action requires specific parameters as defined in the tool's dependencies
+一个强大的浏览器自动化工具，允许通过各种操作与网页进行交互。
+* 此工具提供控制浏览器会话、导航网页和提取信息的命令
+* 它在调用之间保持状态，保持浏览器会话活跃直到明确关闭
+* 当您需要浏览网站、填写表单、点击按钮、提取内容或执行网络搜索时使用此工具
+* 每个操作都需要特定的参数，如工具依赖项中定义的那样
 
-Key capabilities include:
-* Navigation: Go to specific URLs, go back, search the web, or refresh pages
-* Interaction: Click elements, input text, select from dropdowns, send keyboard commands
-* Scrolling: Scroll up/down by pixel amount or scroll to specific text
-* Content extraction: Extract and analyze content from web pages based on specific goals
-* Tab management: Switch between tabs, open new tabs, or close tabs
+主要功能包括：
+* 导航：访问特定URL、返回、搜索网络或刷新页面
+* 交互：点击元素、输入文本、从下拉菜单选择、发送键盘命令
+* 滚动：按像素量上下滚动或滚动到特定文本
+* 内容提取：根据特定目标从网页提取和分析内容
+* 标签管理：在标签之间切换、打开新标签或关闭标签
 
-Note: When using element indices, refer to the numbered elements shown in the current browser state.
+注意：使用元素索引时，请参考当前浏览器状态中显示的编号元素。
 """
 
 Context = TypeVar("Context")
@@ -62,43 +61,43 @@ class BrowserUseTool(BaseTool, Generic[Context]):
                     "open_tab",
                     "close_tab",
                 ],
-                "description": "The browser action to perform",
+                "description": "要执行的浏览器操作",
             },
             "url": {
                 "type": "string",
-                "description": "URL for 'go_to_url' or 'open_tab' actions",
+                "description": "'go_to_url' 或 'open_tab' 操作的URL",
             },
             "index": {
                 "type": "integer",
-                "description": "Element index for 'click_element', 'input_text', 'get_dropdown_options', or 'select_dropdown_option' actions",
+                "description": "'click_element'、'input_text'、'get_dropdown_options' 或 'select_dropdown_option' 操作的元素索引",
             },
             "text": {
                 "type": "string",
-                "description": "Text for 'input_text', 'scroll_to_text', or 'select_dropdown_option' actions",
+                "description": "'input_text'、'scroll_to_text' 或 'select_dropdown_option' 操作的文本",
             },
             "scroll_amount": {
                 "type": "integer",
-                "description": "Pixels to scroll (positive for down, negative for up) for 'scroll_down' or 'scroll_up' actions",
+                "description": "滚动的像素数（正数向下，负数向上），用于 'scroll_down' 或 'scroll_up' 操作",
             },
             "tab_id": {
                 "type": "integer",
-                "description": "Tab ID for 'switch_tab' action",
+                "description": "'switch_tab' 操作的标签ID",
             },
             "query": {
                 "type": "string",
-                "description": "Search query for 'web_search' action",
+                "description": "'web_search' 操作的搜索查询",
             },
             "goal": {
                 "type": "string",
-                "description": "Extraction goal for 'extract_content' action",
+                "description": "'extract_content' 操作的提取目标",
             },
             "keys": {
                 "type": "string",
-                "description": "Keys to send for 'send_keys' action",
+                "description": "'send_keys' 操作要发送的按键",
             },
             "seconds": {
                 "type": "integer",
-                "description": "Seconds to wait for 'wait' action",
+                "description": "'wait' 操作等待的秒数",
             },
         },
         "required": ["action"],
@@ -135,11 +134,11 @@ class BrowserUseTool(BaseTool, Generic[Context]):
     @field_validator("parameters", mode="before")
     def validate_parameters(cls, v: dict, info: ValidationInfo) -> dict:
         if not v:
-            raise ValueError("Parameters cannot be empty")
+            raise ValueError("参数不能为空")
         return v
 
     async def _ensure_browser_initialized(self) -> BrowserContext:
-        """Ensure browser and context are initialized."""
+        """确保浏览器和上下文已初始化。"""
         if self.browser is None:
             browser_config_kwargs = {"headless": False, "disable_security": True}
 

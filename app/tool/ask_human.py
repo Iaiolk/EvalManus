@@ -2,20 +2,20 @@ from app.tool import BaseTool
 
 
 class AskHuman(BaseTool):
-    """Add a tool to ask human for help."""
+    """添加一个向人类寻求帮助的工具。"""
 
     name: str = "ask_human"
-    description: str = "Use this tool to ask human for help."
+    description: str = "使用此工具向人类寻求帮助。"
     parameters: str = {
         "type": "object",
         "properties": {
             "inquire": {
                 "type": "string",
-                "description": "The question you want to ask human.",
+                "description": "您想要询问人类的问题。",
             }
         },
         "required": ["inquire"],
     }
 
     async def execute(self, inquire: str) -> str:
-        return input(f"""Bot: {inquire}\n\nYou: """).strip()
+        return input(f"""机器人：{inquire}\n\n您：""").strip()

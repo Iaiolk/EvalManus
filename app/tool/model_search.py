@@ -253,7 +253,7 @@ class ModelSearch(BaseTool):
             self.client.chat.completions.create,
             model=self._model,
             messages=[{"content": enhanced_prompt, "role": "user"}],
-            temperature=0.8,  # 使用较低温度以获得更确定性的输出
+            temperature=0,  # 使用较低温度以获得更确定性的输出
             top_p=0.8,
             extra_body={
                 "penalty_score": 1.5,

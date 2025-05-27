@@ -9,10 +9,9 @@ from app.prompt.browser import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import Message, ToolChoice
 from app.tool import BrowserUseTool, Terminate, ToolCollection
 
-
-# Avoid circular import if BrowserAgent needs BrowserContextHelper
+# 如果BrowserAgent需要BrowserContextHelper，避免循环导入
 if TYPE_CHECKING:
-    from app.agent.base import BaseAgent  # Or wherever memory is defined
+    from app.agent.base import BaseAgent  # 或者memory定义的地方
 
 
 class BrowserContextHelper:
@@ -23,12 +22,12 @@ class BrowserContextHelper:
     async def get_browser_state(self) -> Optional[dict]:
         browser_tool = self.agent.available_tools.get_tool(BrowserUseTool().name)
         if not browser_tool or not hasattr(browser_tool, "get_current_state"):
-            logger.warning("BrowserUseTool not found or doesn't have get_current_state")
+            logger.warning("未找到BrowserUseTool或没有get_current_state方法")
             return None
         try:
             result = await browser_tool.get_current_state()
             if result.error:
-                logger.debug(f"Browser state error: {result.error}")
+                logger.debug(f"浏览器状态错误：{result.error}")
                 return None
             if hasattr(result, "base64_image") and result.base64_image:
                 self._current_base64_image = result.base64_image
@@ -36,14 +35,14 @@ class BrowserContextHelper:
                 self._current_base64_image = None
             return json.loads(result.output)
         except Exception as e:
-            logger.debug(f"Failed to get browser state: {str(e)}")
+            logger.debug(f"获取浏览器状态失败：{str(e)}")
             return None
 
     async def format_next_step_prompt(self) -> str:
-        """Gets browser state and formats the browser prompt."""
+        """获取浏览器状态并格式化浏览器提示词。"""
         browser_state = await self.get_browser_state()
         url_info, tabs_info, content_above_info, content_below_info = "", "", "", ""
-        results_info = ""  # Or get from agent if needed elsewhere
+        results_info = ""  # 或者如果在其他地方需要，从代理获取
 
         if browser_state and not browser_state.get("error"):
             url_info = f"\n   URL: {browser_state.get('url', 'N/A')}\n   Title: {browser_state.get('title', 'N/A')}"
@@ -59,11 +58,11 @@ class BrowserContextHelper:
 
             if self._current_base64_image:
                 image_message = Message.user_message(
-                    content="Current browser screenshot:",
+                    content="当前浏览器截图：",
                     base64_image=self._current_base64_image,
                 )
                 self.agent.memory.add_message(image_message)
-                self._current_base64_image = None  # Consume the image after adding
+                self._current_base64_image = None  # 添加后消费图像
 
         return NEXT_STEP_PROMPT.format(
             url_placeholder=url_info,
@@ -81,14 +80,14 @@ class BrowserContextHelper:
 
 class BrowserAgent(ToolCallAgent):
     """
-    A browser agent that uses the browser_use library to control a browser.
+    使用browser_use库控制浏览器的浏览器代理。
 
-    This agent can navigate web pages, interact with elements, fill forms,
-    extract content, and perform other browser-based actions to accomplish tasks.
+    此代理可以导航网页、与元素交互、填写表单、
+    提取内容以及执行其他基于浏览器的操作来完成任务。
     """
 
     name: str = "browser"
-    description: str = "A browser agent that can control a browser to accomplish tasks"
+    description: str = "可以控制浏览器来完成任务的浏览器代理"
 
     system_prompt: str = SYSTEM_PROMPT
     next_step_prompt: str = NEXT_STEP_PROMPT
@@ -96,12 +95,12 @@ class BrowserAgent(ToolCallAgent):
     max_observe: int = 10000
     max_steps: int = 20
 
-    # Configure the available tools
+    # 配置可用工具
     available_tools: ToolCollection = Field(
         default_factory=lambda: ToolCollection(BrowserUseTool(), Terminate())
     )
 
-    # Use Auto for tool choice to allow both tool usage and free-form responses
+    # 使用Auto进行工具选择，允许工具使用和自由形式响应
     tool_choices: ToolChoice = ToolChoice.AUTO
     special_tool_names: list[str] = Field(default_factory=lambda: [Terminate().name])
 
@@ -113,12 +112,12 @@ class BrowserAgent(ToolCallAgent):
         return self
 
     async def think(self) -> bool:
-        """Process current state and decide next actions using tools, with browser state info added"""
+        """使用工具处理当前状态并决定下一步行动，添加浏览器状态信息"""
         self.next_step_prompt = (
             await self.browser_context_helper.format_next_step_prompt()
         )
         return await super().think()
 
     async def cleanup(self):
-        """Clean up browser agent resources by calling parent cleanup."""
+        """通过调用父清理方法来清理浏览器代理资源。"""
         await self.browser_context_helper.cleanup_browser()

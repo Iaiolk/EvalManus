@@ -5,16 +5,15 @@ from typing import Optional
 from app.exceptions import ToolError
 from app.tool.base import BaseTool, CLIResult
 
-
-_BASH_DESCRIPTION = """Execute a bash command in the terminal.
-* Long running commands: For commands that may run indefinitely, it should be run in the background and the output should be redirected to a file, e.g. command = `python3 app.py > server.log 2>&1 &`.
-* Interactive: If a bash command returns exit code `-1`, this means the process is not yet finished. The assistant must then send a second call to terminal with an empty `command` (which will retrieve any additional logs), or it can send additional text (set `command` to the text) to STDIN of the running process, or it can send command=`ctrl+c` to interrupt the process.
-* Timeout: If a command execution result says "Command timed out. Sending SIGINT to the process", the assistant should retry running the command in the background.
+_BASH_DESCRIPTION = """在终端中执行bash命令。
+* 长时间运行的命令：对于可能无限期运行的命令，应在后台运行并将输出重定向到文件，例如 command = `python3 app.py > server.log 2>&1 &`。
+* 交互式：如果bash命令返回退出码`-1`，这意味着进程尚未完成。助手必须发送第二次终端调用，使用空的`command`（这将检索任何额外的日志），或者可以发送额外的文本（将`command`设置为文本）到正在运行的进程的STDIN，或者可以发送command=`ctrl+c`来中断进程。
+* 超时：如果命令执行结果显示"命令超时。向进程发送SIGINT"，助手应重试在后台运行命令。
 """
 
 
 class _BashSession:
-    """A session of a bash shell."""
+    """bash shell的会话。"""
 
     _started: bool
     _process: asyncio.subprocess.Process
@@ -45,25 +44,25 @@ class _BashSession:
         self._started = True
 
     def stop(self):
-        """Terminate the bash shell."""
+        """终止bash shell。"""
         if not self._started:
-            raise ToolError("Session has not started.")
+            raise ToolError("会话尚未启动。")
         if self._process.returncode is not None:
             return
         self._process.terminate()
 
     async def run(self, command: str):
-        """Execute a command in the bash shell."""
+        """在bash shell中执行命令。"""
         if not self._started:
-            raise ToolError("Session has not started.")
+            raise ToolError("会话尚未启动。")
         if self._process.returncode is not None:
             return CLIResult(
-                system="tool must be restarted",
-                error=f"bash has exited with returncode {self._process.returncode}",
+                system="工具必须重启",
+                error=f"bash已退出，返回码为{self._process.returncode}",
             )
         if self._timed_out:
             raise ToolError(
-                f"timed out: bash has not returned in {self._timeout} seconds and must be restarted",
+                f"超时：bash在{self._timeout}秒内未返回，必须重启",
             )
 
         # we know these are not None because we created the process with PIPEs
@@ -94,7 +93,7 @@ class _BashSession:
         except asyncio.TimeoutError:
             self._timed_out = True
             raise ToolError(
-                f"timed out: bash has not returned in {self._timeout} seconds and must be restarted",
+                f"超时：bash在{self._timeout}秒内未返回，必须重启",
             ) from None
 
         if output.endswith("\n"):
@@ -114,7 +113,7 @@ class _BashSession:
 
 
 class Bash(BaseTool):
-    """A tool for executing bash commands"""
+    """执行bash命令的工具"""
 
     name: str = "bash"
     description: str = _BASH_DESCRIPTION
@@ -123,7 +122,7 @@ class Bash(BaseTool):
         "properties": {
             "command": {
                 "type": "string",
-                "description": "The bash command to execute. Can be empty to view additional logs when previous exit code is `-1`. Can be `ctrl+c` to interrupt the currently running process.",
+                "description": "要执行的bash命令。当前一个退出码为`-1`时，可以为空以查看额外的日志。可以是`ctrl+c`来中断当前运行的进程。",
             },
         },
         "required": ["command"],
@@ -140,7 +139,7 @@ class Bash(BaseTool):
             self._session = _BashSession()
             await self._session.start()
 
-            return CLIResult(system="tool has been restarted.")
+            return CLIResult(system="工具已重启。")
 
         if self._session is None:
             self._session = _BashSession()
@@ -149,7 +148,7 @@ class Bash(BaseTool):
         if command is not None:
             return await self._session.run(command)
 
-        raise ToolError("no command provided.")
+        raise ToolError("未提供命令。")
 
 
 if __name__ == "__main__":
