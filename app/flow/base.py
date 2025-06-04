@@ -7,7 +7,7 @@ from app.agent.base import BaseAgent
 
 
 class BaseFlow(BaseModel, ABC):
-    """Base class for execution flows supporting multiple agents"""
+    """支持多代理的执行流基类"""
 
     agents: Dict[str, BaseAgent]
     tools: Optional[List] = None
@@ -19,7 +19,7 @@ class BaseFlow(BaseModel, ABC):
     def __init__(
         self, agents: Union[BaseAgent, List[BaseAgent], Dict[str, BaseAgent]], **data
     ):
-        # Handle different ways of providing agents
+        # 处理提供代理的不同方式
         if isinstance(agents, BaseAgent):
             agents_dict = {"default": agents}
         elif isinstance(agents, list):
@@ -27,31 +27,31 @@ class BaseFlow(BaseModel, ABC):
         else:
             agents_dict = agents
 
-        # If primary agent not specified, use first agent
+        # 如果未指定主代理，使用第一个代理
         primary_key = data.get("primary_agent_key")
         if not primary_key and agents_dict:
             primary_key = next(iter(agents_dict))
             data["primary_agent_key"] = primary_key
 
-        # Set the agents dictionary
+        # 设置代理字典
         data["agents"] = agents_dict
 
-        # Initialize using BaseModel's init
+        # 使用BaseModel的初始化
         super().__init__(**data)
 
     @property
     def primary_agent(self) -> Optional[BaseAgent]:
-        """Get the primary agent for the flow"""
+        """获取流的主代理"""
         return self.agents.get(self.primary_agent_key)
 
     def get_agent(self, key: str) -> Optional[BaseAgent]:
-        """Get a specific agent by key"""
+        """根据键获取特定代理"""
         return self.agents.get(key)
 
     def add_agent(self, key: str, agent: BaseAgent) -> None:
-        """Add a new agent to the flow"""
+        """向流中添加新代理"""
         self.agents[key] = agent
 
     @abstractmethod
     async def execute(self, input_text: str) -> str:
-        """Execute the flow with given input"""
+        """使用给定输入执行流"""

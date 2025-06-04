@@ -57,7 +57,7 @@ def maybe_truncate(
 
 
 class StrReplaceEditor(BaseTool):
-    """支持沙盒环境的文件查看、创建和编辑工具。"""
+    """A tool for viewing, creating, and editing files with sandbox support."""
 
     name: str = "str_replace_editor"
     description: str = _STR_REPLACE_EDITOR_DESCRIPTION
@@ -65,32 +65,32 @@ class StrReplaceEditor(BaseTool):
         "type": "object",
         "properties": {
             "command": {
-                "description": "要运行的命令。允许的选项有：`view`、`create`、`str_replace`、`insert`、`undo_edit`。",
+                "description": "The commands to run. Allowed options are: `view`, `create`, `str_replace`, `insert`, `undo_edit`.",
                 "enum": ["view", "create", "str_replace", "insert", "undo_edit"],
                 "type": "string",
             },
             "path": {
-                "description": "文件或目录的绝对路径。",
+                "description": "Absolute path to file or directory.",
                 "type": "string",
             },
             "file_text": {
-                "description": "`create` 命令的必需参数，包含要创建的文件内容。",
+                "description": "Required parameter of `create` command, with the content of the file to be created.",
                 "type": "string",
             },
             "old_str": {
-                "description": "`str_replace` 命令的必需参数，包含 `path` 中要替换的字符串。",
+                "description": "Required parameter of `str_replace` command containing the string in `path` to replace.",
                 "type": "string",
             },
             "new_str": {
-                "description": "`str_replace` 命令的可选参数，包含新字符串（如果未给出，则不会添加字符串）。`insert` 命令的必需参数，包含要插入的字符串。",
+                "description": "Optional parameter of `str_replace` command containing the new string (if not given, no string will be added). Required parameter of `insert` command containing the string to insert.",
                 "type": "string",
             },
             "insert_line": {
-                "description": "`insert` 命令的必需参数。`new_str` 将在 `path` 的第 `insert_line` 行之后插入。",
+                "description": "Required parameter of `insert` command. The `new_str` will be inserted AFTER the line `insert_line` of `path`.",
                 "type": "integer",
             },
             "view_range": {
-                "description": "当 `path` 指向文件时，`view` 命令的可选参数。如果未给出，显示完整文件。如果提供，文件将在指定的行号范围内显示，例如 [11, 12] 将显示第11行和第12行。索引从1开始。设置 `[start_line, -1]` 显示从 `start_line` 到文件末尾的所有行。",
+                "description": "Optional parameter of `view` command when `path` points to a file. If none is given, the full file is shown. If provided, the file will be shown in the indicated line number range, e.g. [11, 12] will show lines 11 and 12. Indexing at 1 to start. Setting `[start_line, -1]` shows all lines from `start_line` to the end of the file.",
                 "items": {"type": "integer"},
                 "type": "array",
             },

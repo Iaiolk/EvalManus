@@ -49,51 +49,51 @@ class SearchMetadata(BaseModel):
 
 
 class SearchResponse(ToolResult):
-    """网页搜索工具的结构化响应，继承自ToolResult。"""
+    """Structured response from the web search tool, inheriting ToolResult."""
 
-    query: str = Field(description="执行的搜索查询")
+    query: str = Field(description="The search query that was executed")
     results: List[SearchResult] = Field(
-        default_factory=list, description="搜索结果列表"
+        default_factory=list, description="List of search results"
     )
     metadata: Optional[SearchMetadata] = Field(
-        default=None, description="关于搜索的元数据"
+        default=None, description="Metadata about the search"
     )
 
     @model_validator(mode="after")
     def populate_output(self) -> "SearchResponse":
-        """根据搜索结果填充输出或错误字段。"""
+        """Populate output or error fields based on search results."""
         if self.error:
             return self
 
-        result_text = [f"'{self.query}'的搜索结果："]
+        result_text = [f"Search results for '{self.query}':"]
 
         for i, result in enumerate(self.results, 1):
-            # 添加带位置编号的标题
-            title = result.title.strip() or "无标题"
+            # Add title with position number
+            title = result.title.strip() or "No title"
             result_text.append(f"\n{i}. {title}")
 
-            # 添加带适当缩进的URL
-            result_text.append(f"   网址: {result.url}")
+            # Add URL with proper indentation
+            result_text.append(f"   URL: {result.url}")
 
-            # 如果有描述则添加
+            # Add description if available
             if result.description.strip():
-                result_text.append(f"   描述: {result.description}")
+                result_text.append(f"   Description: {result.description}")
 
-            # 如果有内容预览则添加
+            # Add content preview if available
             if result.raw_content:
                 content_preview = result.raw_content[:1000].replace("\n", " ").strip()
                 if len(result.raw_content) > 1000:
                     content_preview += "..."
-                result_text.append(f"   内容: {content_preview}")
+                result_text.append(f"   Content: {content_preview}")
 
-        # 如果有元数据则在底部添加
+        # Add metadata at the bottom if available
         if self.metadata:
             result_text.extend(
                 [
-                    f"\n元数据:",
-                    f"- 总结果数: {self.metadata.total_results}",
-                    f"- 语言: {self.metadata.language}",
-                    f"- 国家/地区: {self.metadata.country}",
+                    f"\nMetadata:",
+                    f"- Total results: {self.metadata.total_results}",
+                    f"- Language: {self.metadata.language}",
+                    f"- Country: {self.metadata.country}",
                 ]
             )
 

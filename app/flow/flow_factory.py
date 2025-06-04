@@ -11,7 +11,7 @@ class FlowType(str, Enum):
 
 
 class FlowFactory:
-    """Factory for creating different types of flows with support for multiple agents"""
+    """用于创建支持多代理的不同类型流的工厂类"""
 
     @staticmethod
     def create_flow(
@@ -25,6 +25,6 @@ class FlowFactory:
 
         flow_class = flows.get(flow_type)
         if not flow_class:
-            raise ValueError(f"Unknown flow type: {flow_type}")
+            raise ValueError(f"未知的流类型：{flow_type}")
 
         return flow_class(agents, **kwargs)
