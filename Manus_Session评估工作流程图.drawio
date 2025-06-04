@@ -1,0 +1,138 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" version="27.1.3">
+  <diagram name="Manus Session评估工作流" id="manus_session_workflow">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 输入数据 -->
+        <mxCell id="input_data" value="PV数据输入" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="50" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- 数据预处理节点 -->
+        <mxCell id="data_preprocessing" value="数据预处理Agent&#xa;- PV数据清洗&#xa;- Session行为改写&#xa;- 图片解析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="250" y="50" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- 意图识别节点 -->
+        <mxCell id="intent_recognition" value="意图识别Agent&#xa;- 行为模式分析&#xa;- 用户意图提取&#xa;- 置信度评估" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="450" y="50" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- LLM评估节点 -->
+        <mxCell id="llm_evaluation" value="LLM评估Agent&#xa;- 多维度评估&#xa;- 准确性分析&#xa;- 相关性检查&#xa;- 完整性评估" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="650" y="50" width="150" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- 条件判断节点 -->
+        <mxCell id="query_assessment" value="Query评估Agent&#xa;- 溯源需求判断&#xa;- 阈值检查" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="850" y="50" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 搜索API节点 -->
+        <mxCell id="search_api" value="搜索API Agent&#xa;- 外部API调用&#xa;- 信息检索&#xa;- 验证数据收集" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="850" y="200" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- 准确性溯源节点 -->
+        <mxCell id="accuracy_tracing" value="准确性溯源Agent&#xa;- 证据对比分析&#xa;- 准确性修正&#xa;- 溯源报告生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="650" y="200" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 最终打分节点 -->
+        <mxCell id="final_scoring" value="最终打分Agent&#xa;- 综合评分计算&#xa;- 权重分配&#xa;- 评估报告生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="450" y="200" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 输出结果 -->
+        <mxCell id="output_result" value="评估结果输出&#xa;- 最终评分&#xa;- 详细报告&#xa;- 改进建议" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="250" y="200" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- 连接线 -->
+        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="input_data" target="data_preprocessing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="data_preprocessing" target="intent_recognition">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="intent_recognition" target="llm_evaluation">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="llm_evaluation" target="query_assessment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="query_assessment" target="search_api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="search_api" target="accuracy_tracing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="accuracy_tracing" target="final_scoring">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="final_scoring" target="output_result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 条件判断标签 -->
+        <mxCell id="condition_label" value="需要溯源?" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=12;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="860" y="140" width="80" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- 跳过路径 -->
+        <mxCell id="skip_edge" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;strokeStyle=dashed;strokeColor=#666666;" edge="1" parent="1" source="query_assessment" target="accuracy_tracing">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="925" y="170" />
+              <mxPoint x="780" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="skip_label" value="不需要溯源" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="820" y="150" width="70" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- 图例 -->
+        <mxCell id="legend_title" value="图例" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="50" y="350" width="60" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_data" value="数据节点" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="380" width="80" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_agent" value="Agent节点" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="150" y="380" width="80" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_condition" value="条件节点" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="250" y="380" width="80" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_api" value="API节点" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="350" y="380" width="80" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- 工作流属性说明 -->
+        <mxCell id="properties_title" value="工作流特性" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="50" width="100" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="properties_text" value="✓ 支持条件执行&#xa;✓ 支持并行处理&#xa;✓ 支持错误重试&#xa;✓ 支持超时控制&#xa;✓ 支持状态监控&#xa;✓ 支持结果追踪&#xa;✓ 模块化Agent设计&#xa;✓ 灵活的配置管理" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="80" width="180" height="160" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

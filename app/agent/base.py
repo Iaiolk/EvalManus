@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from contextlib import asynccontextmanager
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -35,6 +35,13 @@ class BaseAgent(BaseModel, ABC):
     current_step: int = Field(default=0, description="执行中的当前步骤")
 
     duplicate_threshold: int = 2
+
+    # 工作流相关属性
+    workflow_context: Dict[str, Any] = Field(
+        default_factory=dict, description="工作流上下文数据"
+    )
+    node_id: Optional[str] = Field(None, description="在工作流中的节点ID")
+    execution_result: Optional[Dict[str, Any]] = Field(None, description="执行结果")
 
     class Config:
         arbitrary_types_allowed = True
@@ -191,3 +198,47 @@ class BaseAgent(BaseModel, ABC):
     def messages(self, value: List[Message]):
         """设置代理内存中的消息列表。"""
         self.memory.messages = value
+
+    def set_workflow_context(
+        self, context: Dict[str, Any], node_id: Optional[str] = None
+    ):
+        """设置工作流上下文"""
+        self.workflow_context = context
+        self.node_id = node_id
+
+    def get_workflow_output(self) -> Dict[str, Any]:
+        """获取当前节点的输出，供下游节点使用"""
+        return {
+            "agent_name": self.name,
+            "node_id": self.node_id,
+            "state": self.state.value,
+            "messages": [msg.model_dump() for msg in self.messages],
+            "execution_result": self.execution_result,
+            "workflow_context": self.workflow_context,
+        }
+
+    async def run_in_workflow(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """在工作流中运行Agent"""
+        # 设置输入数据到上下文
+        self.workflow_context.update(input_data)
+
+        # 如果有输入的用户请求，添加到memory
+        if "user_request" in input_data:
+            self.update_memory("user", input_data["user_request"])
+
+        # 处理来自上游节点的数据
+        for key, value in input_data.items():
+            if key.startswith("from_") and isinstance(value, dict):
+                # 将上游节点的输出添加到上下文中
+                self.workflow_context[key] = value
+
+        try:
+            # 执行Agent
+            result = await self.run()
+            self.execution_result = {"success": True, "output": result}
+
+        except Exception as e:
+            logger.error(f"Agent {self.name} 执行失败: {str(e)}")
+            self.execution_result = {"success": False, "error": str(e)}
+
+        return self.get_workflow_output()
