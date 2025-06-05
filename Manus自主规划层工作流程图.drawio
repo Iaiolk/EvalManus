@@ -1,0 +1,363 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0" version="24.7.14">
+  <diagram name="Manus自主规划层工作流" id="manus-planning-workflow">
+    <mxGraphModel dx="1454" dy="727" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- 标题 -->
+        <mxCell id="title" value="Manus自主规划层工作流程图" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#2F5233;" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="500" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- 开始节点 -->
+        <mxCell id="start" value="开始执行规划流程" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="80" width="160" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 输入验证 -->
+        <mxCell id="validate_input" value="验证输入文本" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="180" width="160" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- 决策：是否有输入 -->
+        <mxCell id="has_input" value="是否有输入文本?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="260" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 计划创建流程 -->
+        <mxCell id="create_plan_section" value="计划创建流程" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;fontStyle=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="360" width="320" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- LLM规划创建 -->
+        <mxCell id="llm_planning" value="使用LLM创建初始计划\n• 系统消息: 规划助手\n• 用户消息: 任务描述\n• 工具调用: PlanningTool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="420" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- PlanningTool执行 -->
+        <mxCell id="planning_tool_exec" value="PlanningTool执行\ncommand: create\n• plan_id生成\n• title设定\n• steps解析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="260" y="420" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 计划验证 -->
+        <mxCell id="validate_plan" value="验证计划创建成功" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="380" width="160" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- 决策：计划是否创建成功 -->
+        <mxCell id="plan_created" value="计划创建成功?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="460" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 主执行循环 -->
+        <mxCell id="main_loop_section" value="主执行循环" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="580" width="320" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- 获取当前步骤 -->
+        <mxCell id="get_current_step" value="获取当前步骤信息\n• 查找未完成步骤\n• 标记为进行中\n• 提取步骤类型" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="520" y="640" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 决策：是否有待执行步骤 -->
+        <mxCell id="has_pending_step" value="是否有待执行步骤?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="640" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 选择执行器 -->
+        <mxCell id="select_executor" value="选择合适的执行器\n• 根据步骤类型\n• 匹配代理能力\n• 回退到主代理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="520" y="760" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 步骤执行流程 -->
+        <mxCell id="step_exec_section" value="步骤执行流程" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="760" width="320" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- 准备执行上下文 -->
+        <mxCell id="prepare_context" value="准备执行上下文\n• 当前计划状态\n• 步骤详细信息\n• 任务提示构建" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="820" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 代理执行 -->
+        <mxCell id="agent_execute" value="代理执行步骤\n• agent.run(prompt)\n• 工具调用\n• 结果生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="240" y="820" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 标记步骤完成 -->
+        <mxCell id="mark_completed" value="标记步骤完成\ncommand: mark_step\nstatus: completed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="760" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 检查代理状态 -->
+        <mxCell id="check_agent_state" value="检查代理状态" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="880" y="640" width="140" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- 决策：代理是否结束 -->
+        <mxCell id="agent_finished" value="代理状态为\nFINISHED?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="880" y="720" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- 计划完成流程 -->
+        <mxCell id="finalize_section" value="计划完成流程" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=14;fontStyle=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="460" width="240" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- 获取最终计划状态 -->
+        <mxCell id="get_final_status" value="获取最终计划状态\n• 格式化计划文本\n• 统计完成情况" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="520" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- LLM生成摘要 -->
+        <mxCell id="llm_summary" value="LLM生成摘要\n• 系统消息\n• 计划状态\n• 总结输出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="520" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 错误处理 -->
+        <mxCell id="error_handling" value="错误处理\n• 创建默认计划\n• 记录错误日志" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="380" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 结束节点 -->
+        <mxCell id="end" value="返回执行结果" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="620" width="160" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 连接线 -->
+        <!-- 开始到输入验证 -->
+        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="start" target="validate_input" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 输入验证到决策 -->
+        <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="validate_input" target="has_input" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 有输入时的流程 -->
+        <mxCell id="edge3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2e7d32;" source="has_input" target="llm_planning" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="300"/>
+              <mxPoint x="160" y="300"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3_label" value="是" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#2e7d32;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="285" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- LLM规划到工具执行 -->
+        <mxCell id="edge4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="llm_planning" target="planning_tool_exec" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 工具执行到计划验证 -->
+        <mxCell id="edge5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="planning_tool_exec" target="validate_plan" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="460"/>
+              <mxPoint x="440" y="400"/>
+              <mxPoint x="680" y="400"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 无输入时直接到验证 -->
+        <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d32f2f;" source="has_input" target="validate_plan" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge6_label" value="否" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#d32f2f;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="320" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- 验证到决策 -->
+        <mxCell id="edge7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="validate_plan" target="plan_created" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 计划创建成功到主循环 -->
+        <mxCell id="edge8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2e7d32;" source="plan_created" target="get_current_step" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="500"/>
+              <mxPoint x="600" y="680"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge8_label" value="是" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#2e7d32;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="590" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- 计划创建失败到错误处理 -->
+        <mxCell id="edge9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d32f2f;" source="plan_created" target="error_handling" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge9_label" value="否" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#d32f2f;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="480" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- 获取步骤到决策 -->
+        <mxCell id="edge10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="get_current_step" target="has_pending_step" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 有待执行步骤到选择执行器 -->
+        <mxCell id="edge11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2e7d32;" source="has_pending_step" target="select_executor" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="770" y="720"/>
+              <mxPoint x="600" y="720"/>
+              <mxPoint x="600" y="800"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge11_label" value="是" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#2e7d32;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="705" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- 无待执行步骤到完成流程 -->
+        <mxCell id="edge12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d32f2f;" source="has_pending_step" target="get_final_status" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="850" y="680"/>
+              <mxPoint x="1150" y="680"/>
+              <mxPoint x="1150" y="550"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge12_label" value="否" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#d32f2f;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="665" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- 选择执行器到准备上下文 -->
+        <mxCell id="edge13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="select_executor" target="prepare_context" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="800"/>
+              <mxPoint x="150" y="800"/>
+              <mxPoint x="150" y="860"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 准备上下文到代理执行 -->
+        <mxCell id="edge14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="prepare_context" target="agent_execute" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 代理执行到标记完成 -->
+        <mxCell id="edge15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="agent_execute" target="mark_completed" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="860"/>
+              <mxPoint x="770" y="860"/>
+              <mxPoint x="770" y="790"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 标记完成到检查状态 -->
+        <mxCell id="edge16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="mark_completed" target="check_agent_state" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="790"/>
+              <mxPoint x="950" y="790"/>
+              <mxPoint x="950" y="660"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 检查状态到决策 -->
+        <mxCell id="edge17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="check_agent_state" target="agent_finished" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 代理未结束，回到循环 -->
+        <mxCell id="edge18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2e7d32;" source="agent_finished" target="get_current_step" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="950" y="920"/>
+              <mxPoint x="600" y="920"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge18_label" value="否,继续循环" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=11;fontColor=#2e7d32;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="905" width="80" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- 代理结束到完成流程 -->
+        <mxCell id="edge19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d32f2f;" source="agent_finished" target="get_final_status" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1060" y="760"/>
+              <mxPoint x="1150" y="760"/>
+              <mxPoint x="1150" y="550"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge19_label" value="是,结束" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=11;fontColor=#d32f2f;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="745" width="60" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- 获取最终状态到LLM摘要 -->
+        <mxCell id="edge20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="get_final_status" target="llm_summary" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- LLM摘要到结束 -->
+        <mxCell id="edge21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#333333;" source="llm_summary" target="end" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1300" y="600"/>
+              <mxPoint x="1200" y="600"/>
+              <mxPoint x="1200" y="650"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 错误处理到结束 -->
+        <mxCell id="edge22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d32f2f;" source="error_handling" target="end" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="280"/>
+              <mxPoint x="1200" y="280"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 图例 -->
+        <mxCell id="legend_title" value="图例说明" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1;fontColor=#2F5233;" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="80" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend1" value="计划创建流程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="80" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend2" value="主执行循环" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="130" y="570" width="80" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend3" value="步骤执行流程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="220" y="570" width="80" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend4" value="计划完成流程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="310" y="570" width="80" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend5" value="验证与决策" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="80" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend6" value="条件判断" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="130" y="595" width="80" height="30" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
